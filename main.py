@@ -123,12 +123,15 @@ class DrawInfo:
 
 def main():
     run = True
-    # clock = pygame.time.Clock() will be useful later for auto generation
+    # clock = pygame.time.Clock() 
     draw_info = DrawInfo()
     draw_info.create_field()
 
+    canFlipDeadCell = True
+    canFlipAliveCell = True
+
     while run:
-        # clock.tick(60)
+        # clock.tick(1000)
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -137,14 +140,18 @@ def main():
                 run = False
                 break
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_button_pressed = pygame.mouse.get_pressed()
-                if mouse_button_pressed[0]: #left click
-                    row, col = get_grid_pos(pygame.mouse.get_pos(), draw_info.SIZE)
-                    if draw_info.field[row][col] == 0: # blank
-                        draw_info.field[row][col] = 1
-                    elif draw_info.field[row][col] == 1: # already checked
-                        draw_info.field[row][col] = 0
+            if pygame.mouse.get_pressed()[0]:
+                row, col = get_grid_pos(pygame.mouse.get_pos(), draw_info.SIZE)
+                if draw_info.field[row][col] == 0 and canFlipDeadCell: # dead
+                    draw_info.field[row][col] = 1
+                    canFlipAliveCell = False
+                
+                elif draw_info.field[row][col] == 1 and canFlipAliveCell: # alive
+                    draw_info.field[row][col] = 0
+                    canFlipDeadCell = False
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                canFlipDeadCell = canFlipAliveCell = True
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
