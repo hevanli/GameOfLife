@@ -4,6 +4,9 @@ import time
 pygame.init()
 
 def get_neighbors(row, col, rows, cols):
+    '''
+    returns a list of the neighbors of a cell in a double matrix
+    '''
     neighbors = []
     if row > 0:
         neighbors.append((row - 1, col))
@@ -26,6 +29,9 @@ def get_neighbors(row, col, rows, cols):
     return neighbors
 
 def get_grid_pos(mouse_pos, size):
+    '''
+    gets the relative grid position from the coordinates of a mouse click
+    '''
     mx, my = mouse_pos
     row = int(my // size)
     col = int(mx // size)
@@ -57,9 +63,16 @@ class DrawInfo:
         self.cols = int(self.WIDTH/self.SIZE)
 
     def create_field(self):
+        '''
+        creates a matrix of the proper size
+        '''
         self.field = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
 
     def draw_field(self):
+        '''
+        draws the matrix
+        '''
+
         self.window.fill(self.BG_COLOR)
 
         for i, row in enumerate(self.field):
@@ -76,6 +89,10 @@ class DrawInfo:
         pygame.display.update()
 
     def iterate_field(self):
+        '''
+        iterates the matrix once with the proper conway's game of life rules
+        '''
+
         temp_field = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
         copy_matrixes(self.field, temp_field)
         
@@ -85,12 +102,15 @@ class DrawInfo:
                 if num_of_neighbors < 2 or num_of_neighbors > 3:
                     temp_field[i][j] = 0
                 if temp_field[i][j] == 0 and num_of_neighbors == 3:
-                    # print("true")
                     temp_field[i][j] = 1
                 
         copy_matrixes(temp_field, self.field)
 
     def neighbor_count(self, row, col):
+        '''
+        returns the number of alive neighbors to a cell
+        '''
+
         neighbors = get_neighbors(row, col, self.rows, self.cols)
         neighbor_count = 0
 
@@ -101,7 +121,6 @@ class DrawInfo:
         
         return neighbor_count
 
-                
 def main():
     run = True
     # clock = pygame.time.Clock() will be useful later for auto generation
@@ -113,34 +132,25 @@ def main():
         pygame.display.update()
 
         for event in pygame.event.get():
+            
             if event.type == pygame.QUIT:
                 run = False
                 break
+
             if event.type == pygame.MOUSEBUTTONDOWN:
-
-                row, col = get_grid_pos(pygame.mouse.get_pos(), draw_info.SIZE)
                 mouse_button_pressed = pygame.mouse.get_pressed()
-
                 if mouse_button_pressed[0]: #left click
-
-                    neighbors = get_neighbors(row, col, draw_info.rows, draw_info.cols)
-                    neighbor_count = 0
-                    for neighbor in neighbors:
-                        neighborrow, neighborcol = neighbor
-                        if draw_info.field[neighborrow][neighborcol] == 1:
-                            neighbor_count += 1
-                    print(neighbor_count)
-
+                    row, col = get_grid_pos(pygame.mouse.get_pos(), draw_info.SIZE)
                     if draw_info.field[row][col] == 0: # blank
                         draw_info.field[row][col] = 1
                     elif draw_info.field[row][col] == 1: # already checked
                         draw_info.field[row][col] = 0
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     draw_info.iterate_field()
 
         draw_info.draw_field()
-
 
 if __name__ == "__main__":
     main()
