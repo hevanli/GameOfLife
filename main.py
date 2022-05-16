@@ -130,8 +130,10 @@ def main():
     canFlipDeadCell = True
     canFlipAliveCell = True
 
+    running = False
+
     while run:
-        # clock.tick(1000)
+        # clock.tick(5)
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -155,7 +157,12 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    draw_info.iterate_field()
+                    running = not running
+                    # draw_info.iterate_field()
+
+        if running:
+            draw_info.iterate_field()
+            pygame.time.delay(10)
 
         draw_info.draw_field()
 
